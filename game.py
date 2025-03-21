@@ -1,20 +1,22 @@
 import sys
 import pygame
-from init import initialize_pygame, load_assets, create_sprite_groups, SCREEN_WIDTH, SCREEN_HEIGHT, FPS
-from screens.game_over_screen import GameOverScreen, draw_text
-from screens.main_menu_screen import main_menu_screen
-from screens.game_screen import GameScreen
-from screens.scrolling_background import ScrollingBackground
-from spaceship import Spaceship
-from alien import Alien
-from asteroid import Asteroid
-from boss import Boss
-from projectile import Projectile
-from blood import Blood
+from source_code.init import initialize_pygame, load_assets, create_sprite_groups, SCREEN_WIDTH, SCREEN_HEIGHT, FPS
+from source_code.screens.game_over_screen import GameOverScreen, draw_text
+from source_code.screens.main_menu_screen import main_menu_screen
+from source_code.screens.game_screen import GameScreen
+from source_code.screens.scrolling_background import ScrollingBackground
+from source_code.spaceship import Spaceship
+from source_code.alien import Alien
+from source_code.asteroid import Asteroid
+from source_code.boss import Boss
+from source_code.projectile import Projectile
+from source_code.blood import Blood     
+
+# Hi my name is Kayla 
 
 class Game:
     def __init__(self):
-        # Initialize pygame and load assets.
+        # Initialise pygame and load assets.
         self.screen = initialize_pygame()
         self.assets = load_assets()
         self.sprite_groups = create_sprite_groups()  # Create sprite groups.
