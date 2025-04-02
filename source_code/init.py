@@ -4,6 +4,23 @@ SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 FPS = 60
 
+import os
+
+# Get the directory of the current script (init.py is inside "source_code")
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+
+# Set the correct path to the images folder
+IMAGE_DIR = os.path.join(BASE_DIR, "assets", "images")
+
+print("Base directory:", BASE_DIR)  # Debugging
+print("Image directory:", IMAGE_DIR)  # Debugging
+
+print("Looking for file at:", os.path.join(IMAGE_DIR, "background.jpg"))
+
+background_path = os.path.join(IMAGE_DIR, "background.jpg")
+print(f"Full path to background.jpg: {background_path}")  # Debugging
+
+
 
 def initialize_pygame():
     """Initialize pygame and set up the screen."""
@@ -20,7 +37,8 @@ def load_assets():
     """Load all game assets (e.g., images, sounds)."""
     assets = {}
 
-    # Load background image.
+
+    # Load background image
     try:
         assets["background"] = pygame.image.load('Space Shooter Game Project/assets/images/background.jpg').convert()
     except pygame.error as e:
@@ -28,7 +46,7 @@ def load_assets():
         assets["background"] = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
         assets["background"].fill((0, 0, 0))  # Black background.
 
-    # Load heart image.
+    # Load heart image
     try:
         heart_image = pygame.image.load('Space Shooter Game Project/assets/images/heart.png').convert_alpha()
         assets["heart"] = pygame.transform.scale(heart_image, (40, 40))  # Resize to 20x20 pixels.
@@ -37,7 +55,7 @@ def load_assets():
         assets["heart"] = pygame.Surface((30, 30), pygame.SRCALPHA)
         pygame.draw.circle(assets["heart"], (255, 0, 0), (15, 15), 15)  # Red circle.
 
-    # Load spaceship image.
+    # Load spaceship image
     try:
         assets["spaceship"] = pygame.image.load('Space Shooter Game Project/assets/images/spaceship.png').convert_alpha()
     except pygame.error as e:
