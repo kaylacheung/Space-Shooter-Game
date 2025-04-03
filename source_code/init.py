@@ -40,7 +40,8 @@ def load_assets():
 
     # Load background image
     try:
-        assets["background"] = pygame.image.load('Space Shooter Game Project/assets/images/background.jpg').convert()
+        assets["background"] = pygame.image.load('./assets/images/background.jpg').convert()
+        print("loading image")
     except pygame.error as e:
         print(f"Failed to load background.jpg: {e}. Using fallback.")
         assets["background"] = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -48,7 +49,7 @@ def load_assets():
 
     # Load heart image
     try:
-        heart_image = pygame.image.load('Space Shooter Game Project/assets/images/heart.png').convert_alpha()
+        heart_image = pygame.image.load('./assets/images/heart.png').convert_alpha()
         assets["heart"] = pygame.transform.scale(heart_image, (40, 40))  # Resize to 20x20 pixels.
     except pygame.error as e:
         print(f"Failed to load heart.png: {e}. Using fallback.")
@@ -57,7 +58,7 @@ def load_assets():
 
     # Load spaceship image
     try:
-        assets["spaceship"] = pygame.image.load('Space Shooter Game Project/assets/images/spaceship.png').convert_alpha()
+        assets["spaceship"] = pygame.image.load('./assets/images/spaceship.png').convert_alpha()
     except pygame.error as e:
         print(f"Failed to load spaceship.png: {e}. Using fallback.")
         assets["spaceship"] = pygame.Surface((50, 50), pygame.SRCALPHA)
@@ -65,7 +66,7 @@ def load_assets():
 
     # Load alien image.
     try:
-        assets["alien"] = pygame.image.load('Space Shooter Game Project/assets/images/alien.png').convert_alpha()
+        assets["alien"] = pygame.image.load('./assets/images/alien.png').convert_alpha()
     except pygame.error as e:
         print(f"Failed to load alien.png: {e}. Using fallback.")
         assets["alien"] = pygame.Surface((50, 50), pygame.SRCALPHA)
@@ -73,7 +74,7 @@ def load_assets():
 
     # Load asteroid image.
     try:
-        assets["asteroid"] = pygame.image.load('Space Shooter Game Project/assets/images/asteroid.png').convert_alpha()
+        assets["asteroid"] = pygame.image.load('./assets/images/asteroid.png').convert_alpha()
     except pygame.error as e:
         print(f"Failed to load asteroid.png: {e}. Using fallback.")
         assets["asteroid"] = pygame.Surface((50, 50), pygame.SRCALPHA)
@@ -81,7 +82,7 @@ def load_assets():
 
     # Load boss image.
     try:
-        assets["boss"] = pygame.image.load('Space Shooter Game Project/assets/images/boss.png').convert_alpha()
+        assets["boss"] = pygame.image.load('./assets/images/boss.png').convert_alpha()
     except pygame.error as e:
         print(f"Failed to load boss.png: {e}. Using fallback.")
         assets["boss"] = pygame.Surface((100, 100), pygame.SRCALPHA)
@@ -89,7 +90,7 @@ def load_assets():
 
     # Load blood image.
     try:
-        assets["blood"] = pygame.image.load('Space Shooter Game Project/assets/images/blood.png').convert_alpha()
+        assets["blood"] = pygame.image.load('./assets/images/blood.png').convert_alpha()
     except pygame.error as e:
         print(f"Failed to load blood.png: {e}. Using fallback.")
         assets["blood"] = pygame.Surface((10, 10), pygame.SRCALPHA)
@@ -97,7 +98,7 @@ def load_assets():
 
     # Load projectile image.
     try:
-        assets["projectile"] = pygame.image.load('Space Shooter Game Project/assets/images/projectile.png').convert_alpha()
+        assets["projectile"] = pygame.image.load('./assets/images/projectile.png').convert_alpha()
     except pygame.error as e:
         print(f"Failed to load projectile.png: {e}. Using fallback.")
         assets["projectile"] = pygame.Surface((10, 10), pygame.SRCALPHA)
