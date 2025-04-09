@@ -24,6 +24,7 @@ class Game:
         self.enemies = self.sprite_groups["enemies"]
         self.projectiles = self.sprite_groups["projectiles"]
         self.boss_bloods = self.sprite_groups["boss_bloods"]
+        self.can_spawn_next_wave = True
 
         # Initialize game objects.
         self.background = ScrollingBackground(self.assets["background"], speed=3)
@@ -47,9 +48,9 @@ class Game:
     def setup_timers(self):
         """Set up timers for enemy wave spawn and boss blood attacks."""
         self.SPAWN_EVENT = pygame.USEREVENT + 1
-        pygame.time.set_timer(self.SPAWN_EVENT, 5000)  # Spawn waves every 5 seconds.
+        pygame.time.set_timer(self.SPAWN_EVENT, 5000)  # Spawn waves every 5 seconds
         self.BOSS_BLOOD_EVENT = pygame.USEREVENT + 2
-        pygame.time.set_timer(self.BOSS_BLOOD_EVENT, 3000)  # Boss blood attack every 3 seconds.
+        pygame.time.set_timer(self.BOSS_BLOOD_EVENT, 2000)  # Boss blood attack every 2 seconds heehhe
 
     def run(self):
         """Main game loop."""
@@ -99,10 +100,10 @@ class Game:
 
     def spawn_enemy_wave(self):
         """Spawn a wave of enemies (aliens and asteroids)."""
-        if not self.bosses:  # Only spawn waves if no boss is active.
+        if not self.bosses:  # Only spawn waves if no boss is active
             Alien.spawn_wave(self.enemies, self.all_sprites, self.assets["alien"])
-            if self.enemy_wave_count == 1:  # Only spawn asteroids in the first wave.
-                Asteroid.spawn_wave(self.enemies, self.all_sprites, self.assets["asteroid"])
+            # Always spawn asteroids
+            Asteroid.spawn_wave(self.enemies, self.all_sprites, self.assets["asteroid"])
             self.enemy_wave_count += 1
             if self.enemy_wave_count >= 4:
                 self.spawn_bosses()
@@ -114,10 +115,26 @@ class Game:
 
     def update_game_state(self):
         """Update all game objects and check for collisions."""
-        self.all_sprites.update(pygame.key.get_pressed())  # Update all sprites.
+        self.all_sprites.update(pygame.key.get_pressed())
         self.background.update()
         self.check_collisions()
         self.check_game_over()
+        
+        # Check if current wave has cleared the screen
+        if not self.can_spawn_next_wave:
+            wave_cleared = True
+            for enemy in self.enemies:
+                if isinstance(enemy, (Alien, Asteroid)) and enemy.rect.top < SCREEN_HEIGHT:
+                    wave_cleared = False
+                    break
+            if wave_cleared:
+                self.can_spawn_next_wave = True
+                
+        # Check for boss spawn conditions
+        if (self.enemy_wave_count >= 8 and 
+            len(self.enemies) == 0 and 
+            not self.bosses):
+            self.spawn_bosses()
 
 
     def draw(self):
@@ -128,17 +145,39 @@ class Game:
 
     def check_collisions(self):
         """Check for collisions between projectiles, enemies, and the player."""
+        # Check projectile-enemy collisions
         for projectile in self.projectiles:
+            # Get all enemies hit by this projectile
             enemies_hit = pygame.sprite.spritecollide(projectile, self.enemies, False)
             for enemy in enemies_hit:
-                projectile.kill()  # Remove the projectile.
-                enemy.health -= 30  # Reduce enemy health.
-                if enemy.health <= 0:
-                    enemy.kill()  # Remove the enemy if health reaches zero.
-                    if enemy in self.bosses:  # Check if the enemy is a boss.
-                        self.bosses.remove(enemy)  # Remove the boss from the bosses list.
-                        pygame.time.set_timer(self.BOSS_BLOOD_EVENT, 0)  # Stop blood attacks.
-                    self.score += 100  # Increase score when an enemy is killed.
+                projectile.kill()  # Remove the projectile
+                if isinstance(enemy, Boss):  # Boss takes damage but doesn't die immediately
+                    enemy.health -= 30
+                    if enemy.health <= 0:
+                        enemy.kill()
+                        self.bosses.remove(enemy)
+                        pygame.time.set_timer(self.BOSS_BLOOD_EVENT, 0)
+                        self.score += 100
+                        # Immediately spawn new wave after boss dies
+                        self.enemy_wave_count = 1
+                        pygame.time.set_timer(self.SPAWN_EVENT, 3000)  # Reset to 3 seconds
+                        self.spawn_enemy_wave()  # Spawn first wave immediately
+                else:  # Regular enemies (Aliens, Asteroids) die immediately
+                    enemy.kill()
+                    self.score += 100
+
+        # Check player-enemy collisions
+        enemies_collided = pygame.sprite.spritecollide(self.player, self.enemies, False)
+        for enemy in enemies_collided:
+            if isinstance(enemy, Boss):  # Boss collision
+                self.lives -= 1
+            else:  # Regular enemy collision
+                enemy.kill()
+                self.lives -= 1
+
+        # Check boss blood collisions
+        if pygame.sprite.spritecollide(self.player, self.boss_bloods, True):
+            self.lives -= 1
 
         # Check if boss blood hits the player.
         if pygame.sprite.spritecollide(self.player, self.boss_bloods, True):
