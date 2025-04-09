@@ -10,13 +10,13 @@ A fast-paced **2D space shooter game** built with **Python** and **Pygame**, whe
 - **Level transitions & a victory screen**  
 
 **Game Features**  
-✔ **Player Spaceship** – Move with arrow keys and shoot projectiles (spacebar/ up arrow key) 
-✔ **Enemy Waves** – Fight aliens and asteroids that spawn in increasing numbers
-✔ **Boss Battles** – Defeat powerful bosses at the end of each level
-✔ **Health & Lives System** – Lose lives on enemy collisions; game over at 0 lives  
-✔ **Scoring System** – Earn points by defeating enemies 
-✔ **Level Progression** – Clear waves to advance through 4 challenging levels
-✔ **Visual Effects** – Smooth animations, scrolling backgrounds, and UI elements
+-  **Player Spaceship** – Move with arrow keys and shoot projectiles (spacebar/ up arrow key) 
+-  **Enemy Waves** – Fight aliens and asteroids that spawn in increasing numbers
+-  **Boss Battles** – Defeat powerful bosses at the end of each level
+-  **Health & Lives System** – Lose lives on enemy collisions; game over at 0 lives  
+-  **Scoring System** – Earn points by defeating enemies 
+-  **Level Progression** – Clear waves to advance through 4 challenging levels
+-  **Visual Effects** – Smooth animations, scrolling backgrounds, and UI elements
 
 **How to Play**  
 1. **Run `game.py`** to start the game
