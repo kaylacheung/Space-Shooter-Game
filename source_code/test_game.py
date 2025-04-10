@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch, MagicMock, PropertyMock
-from game import Game
+from source_code.game import Game
 
 class TestGame(unittest.TestCase):
     def setUp(self):
