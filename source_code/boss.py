@@ -71,9 +71,10 @@ class Boss(Enemy):
             list: A list of Boss objects that were spawned.
         """
         bosses = []
-        spacing = SCREEN_WIDTH // (boss_level + 1)
-        for i in range(1, boss_level + 1):
-            x = spacing * i
+        # Spawn bosses based on the boss level (2 bosses for level 2, 3 for level 3, etc.)
+        spacing = SCREEN_WIDTH // (boss_level + 1)  # Even spacing for the bosses
+        for i in range(boss_level):  # Ensure two bosses are spawned at level 2 and more at higher levels
+            x = spacing * (i + 1)  # Place the bosses evenly across the screen.
             boss = Boss(x, 100, boss_level, image, assets)
             bosses.append(boss)
             enemies.add(boss)

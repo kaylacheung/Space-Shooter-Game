@@ -11,12 +11,14 @@ from asteroid import Asteroid
 from boss import Boss
 from projectile import Projectile
 from blood import Blood     
+from screens.level_transition_screen import LevelTransitionScreen  # Import Level Transition Screen
+from screens.congratulations_screen import CongratulationsScreen  # Import Congratulations Screen
 
-# Hi my name is Kayla 
+# Hello I am KAyla
 
 class Game:
     def __init__(self):
-        # Initialise pygame and load assets.
+        """Initialise the game and set up variables."""
         self.screen = initialize_pygame()
         self.assets = load_assets()
         self.sprite_groups = create_sprite_groups()  # Create sprite groups.
@@ -26,23 +28,26 @@ class Game:
         self.boss_bloods = self.sprite_groups["boss_bloods"]
         self.can_spawn_next_wave = True
 
-        # Initialize game objects.
+        # Initialise game objects
         self.background = ScrollingBackground(self.assets["background"], speed=3)
         self.player = Spaceship(SCREEN_WIDTH // 2, SCREEN_HEIGHT - 100, speed=5, image=self.assets["spaceship"])
-        self.all_sprites.add(self.player)  # Add player to the all_sprites group.
+        self.all_sprites.add(self.player)  # Add player to the all_sprites group
 
-        # Initialize screen classes.
+        # Initialise screen classes
         self.game_screen = GameScreen(self.screen, self.assets)
         self.game_over_screen = None
+        self.level_transition_screen = LevelTransitionScreen(self.screen)  # Initialise level transition screen
+        self.congratulations_screen = CongratulationsScreen(self.screen)  # Initialise congratulations screen
 
-        # Game variables.
+        # Game variables/ constants
         self.lives = 5
         self.score = 0
         self.boss_level = 1
         self.bosses = []
         self.enemy_wave_count = 1
+        self.current_level = 1 
 
-        # Set up timers.
+        
         self.setup_timers()
 
     def setup_timers(self):
@@ -50,14 +55,15 @@ class Game:
         self.SPAWN_EVENT = pygame.USEREVENT + 1
         pygame.time.set_timer(self.SPAWN_EVENT, 5000)  # Spawn waves every 5 seconds
         self.BOSS_BLOOD_EVENT = pygame.USEREVENT + 2
-        pygame.time.set_timer(self.BOSS_BLOOD_EVENT, 2000)  # Boss blood attack every 2 seconds heehhe
+        pygame.time.set_timer(self.BOSS_BLOOD_EVENT, 2000)  # Boss blood attack every TWO SECONDs
 
     def run(self):
         """Main game loop."""
+
         clock = pygame.time.Clock()
         while True:
             if not main_menu_screen(self.screen):
-                break  # Exit if the player quits from the main menu.
+                break  # Exit when player quits from main menu.
 
             self.reset_game()
             while True:
@@ -70,7 +76,7 @@ class Game:
                 if self.lives <= 0:
                     self.game_over_screen = GameOverScreen(self.screen, self.score)
                     if not self.game_over_screen.show():
-                        break  # Exit if the player quits from the game over screen.
+                        break  # Exit if the player quits from the game over screen
                     self.reset_game()
 
     def handle_events(self):
@@ -95,23 +101,36 @@ class Game:
         if self.bosses:
             for boss in self.bosses:
                 blood = boss.shoot_blood()
-                self.all_sprites.add(blood)
-                self.boss_bloods.add(blood)
+                if blood:  # Check if blood is returned by the boss
+                    self.all_sprites.add(blood)
+                    self.boss_bloods.add(blood)
 
     def spawn_enemy_wave(self):
         """Spawn a wave of enemies (aliens and asteroids)."""
-        if not self.bosses:  # Only spawn waves if no boss is active
-            Alien.spawn_wave(self.enemies, self.all_sprites, self.assets["alien"])
-            # Always spawn asteroids
-            Asteroid.spawn_wave(self.enemies, self.all_sprites, self.assets["asteroid"])
+        if not self.bosses:  # Only spawn waves if no boss is active.
+            Alien.spawn_wave(self.enemies, self.all_sprites, self.assets["alien"], self.current_level)
+            Asteroid.spawn_wave(self.enemies, self.all_sprites, self.assets["asteroid"], self.current_level)
             self.enemy_wave_count += 1
             if self.enemy_wave_count >= 4:
                 self.spawn_bosses()
 
+        # Check if the boss is defeated and transition to the next level
+        if not self.bosses and self.enemy_wave_count >= 4:
+            self.level_up()
+
+
     def spawn_bosses(self):
         """Spawn bosses based on the current boss level."""
-        self.bosses = Boss.spawn_bosses(self.boss_level, self.enemies, self.all_sprites, self.assets["boss"], self.assets)
-        self.enemy_wave_count = 0  # Reset wave count.
+        num_bosses = self.current_level  # The number of bosses should = current boss level eg level2 = 2 bosses; level 3 = 3 bosses
+        
+        # Spawn the bosses for the current level
+        self.bosses = Boss.spawn_bosses(num_bosses, self.enemies, self.all_sprites, self.assets["boss"], self.assets)
+        self.enemy_wave_count = 0  # Reset wave count
+        
+        # Make sure each boss has its own blood attack event
+        pygame.time.set_timer(self.BOSS_BLOOD_EVENT, 2000)  # Ensure each boss spits out blood
+
+
 
     def update_game_state(self):
         """Update all game objects and check for collisions."""
@@ -119,7 +138,11 @@ class Game:
         self.background.update()
         self.check_collisions()
         self.check_game_over()
-        
+
+        # Check if all bosses are defeated before transitioning to the next level
+        if not self.bosses and self.enemy_wave_count >= 4:
+            self.level_up()  # Call level_up only when all bosses are defeated
+
         # Check if current wave has cleared the screen
         if not self.can_spawn_next_wave:
             wave_cleared = True
@@ -129,17 +152,16 @@ class Game:
                     break
             if wave_cleared:
                 self.can_spawn_next_wave = True
-                
+                    
         # Check for boss spawn conditions
         if (self.enemy_wave_count >= 8 and 
             len(self.enemies) == 0 and 
             not self.bosses):
             self.spawn_bosses()
 
-
     def draw(self):
         """Draw all game objects and UI elements."""
-        self.background.draw(self.screen)  # Draw the scrolling background.
+        self.background.draw(self.screen)  # Draw the scrolling background
         self.game_screen.draw(self.all_sprites, self.bosses, self.score, self.lives)  # Use GameScreen to draw everything.
         pygame.display.flip()
 
@@ -162,11 +184,15 @@ class Game:
                         self.enemy_wave_count = 1
                         pygame.time.set_timer(self.SPAWN_EVENT, 3000)  # Reset to 3 seconds
                         self.spawn_enemy_wave()  # Spawn first wave immediately
+                        
+                        # Call level_up() after the boss is defeated to transition to the next level
+                        self.level_up()
+
                 else:  # Regular enemies (Aliens, Asteroids) die immediately
                     enemy.kill()
                     self.score += 100
 
-        # Check player-enemy collisions
+        # Check player-enemy collisions.
         enemies_collided = pygame.sprite.spritecollide(self.player, self.enemies, False)
         for enemy in enemies_collided:
             if isinstance(enemy, Boss):  # Boss collision
@@ -179,13 +205,10 @@ class Game:
         if pygame.sprite.spritecollide(self.player, self.boss_bloods, True):
             self.lives -= 1
 
-        # Check if boss blood hits the player.
-        if pygame.sprite.spritecollide(self.player, self.boss_bloods, True):
-            self.lives -= 1
-
-        # Check if player touches enemies.
+        # Check if player touches enemies
         if pygame.sprite.spritecollide(self.player, self.enemies, True):
             self.lives -= 1
+
 
     def check_game_over(self):
         """Check if the game is over (lives <= 0)."""
@@ -200,6 +223,7 @@ class Game:
         self.boss_level = 1
         self.bosses = []
         self.enemy_wave_count = 0
+        self.current_level = 1  # Reset to Level 1 at the start
         self.all_sprites.empty()
         self.enemies.empty()
         self.projectiles.empty()
@@ -212,6 +236,29 @@ class Game:
         """Quit the game."""
         pygame.quit()
         sys.exit()
+
+    def level_up(self):
+        """Handle level-up transition."""
+        self.lives = 5  # Reset lives to 5 at the start of every new level
+
+        if self.current_level == 1:
+            self.level_transition_screen.show_level_transition(self.current_level)
+            self.current_level = 2
+            self.enemy_wave_count = 0
+            self.spawn_enemy_wave()
+        elif self.current_level == 2:
+            self.level_transition_screen.show_level_transition(self.current_level)
+            self.current_level = 3
+            self.enemy_wave_count = 0
+            self.spawn_enemy_wave()
+        elif self.current_level == 3:
+            self.level_transition_screen.show_level_transition(self.current_level)
+            self.current_level = 4
+            self.enemy_wave_count = 0
+            self.spawn_enemy_wave()
+
+        elif self.current_level == 4:
+            self.congratulations_screen.show_congratulations()
 
 if __name__ == "__main__":
     game = Game()

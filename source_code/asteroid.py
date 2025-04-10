@@ -25,7 +25,7 @@ class Asteroid(Enemy):
             self.rect.bottom = 0
 
     @staticmethod
-    def spawn_wave(enemies, all_sprites, image):
+    def spawn_wave(enemies, all_sprites, image, level):
         """
         Spawn a wave of asteroids.
 
