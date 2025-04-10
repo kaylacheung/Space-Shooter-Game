@@ -12,7 +12,8 @@ A fast-paced **2D space shooter game** built with **Python** and **Pygame**, whe
 **Game Features**  
 -  **Player Spaceship** – Move with arrow keys and shoot projectiles (spacebar/ up arrow key) 
 -  **Enemy Waves** – Fight aliens and asteroids that spawn in increasing numbers
--  **Boss Battles** – Defeat powerful bosses at the end of each level
+-  **Row Persistence** – If an entire row of asteroids isn’t cleared in one wave, it will reappear in the next wave
+-  **Boss Battles** – Each level ends with a powerful boss; the level is only complete when the boss is defeated
 -  **Health & Lives System** – Lose lives on enemy collisions; game over at 0 lives  
 -  **Scoring System** – Earn points by defeating enemies 
 -  **Level Progression** – Clear waves to advance through 4 challenging levels
@@ -25,6 +26,7 @@ A fast-paced **2D space shooter game** built with **Python** and **Pygame**, whe
    - **← / →** – Move spaceship leftt right  
    - **Spacebar** – Shoot projectiles  
 4. **Objective:**  
+   - Destroy enemies by shooting projectiles from your spaceship
    - Survive enemy waves and defeat bosses
    - Progress through all 4 levels to win
 
