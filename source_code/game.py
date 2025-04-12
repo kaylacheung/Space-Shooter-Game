@@ -185,8 +185,10 @@ class Game:
                         pygame.time.set_timer(self.SPAWN_EVENT, 3000)  # Reset to 3 seconds
                         self.spawn_enemy_wave()  # Spawn first wave immediately
                         
-                        # Call level_up() after the boss is defeated to transition to the next level
-                        self.level_up()
+                                                # If all bosses are defeated, trigger level transition
+                        if len(self.bosses) == 0:
+                            pygame.time.set_timer(self.BOSS_BLOOD_EVENT, 0)
+                            self.level_up()
 
                 else:  # Regular enemies (Aliens, Asteroids) die immediately
                     enemy.kill()
